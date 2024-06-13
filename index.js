@@ -5,7 +5,7 @@ const button = document.getElementById("add-todo");
 // console.log(button);
 //fn to run when btn is clicked
 function handleAddTodo() {
-  const ul = document.querySelector("ul");
+  const ul = document.getElementsByTagName("ul")[0];
   console.log(ul);
   //create an li to go into ul
   const li = document.createElement("li");
