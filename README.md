@@ -18,3 +18,4 @@ This web app is a cute pastel green themed todo list app. Some features include
 - border bottom of the lists for clear separation between each tasks
 - mayeb but probably not smoothing animation to the parent div when todos are added instad of abrupting increased height
 - footer to link to github
+- to deactivate add button when anothing is written in input box
