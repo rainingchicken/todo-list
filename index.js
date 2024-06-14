@@ -15,7 +15,7 @@ const addButton = document.getElementById("add-todo"); //add to do btn
 const resetButton = document.getElementById("reset-btn");
 const initial_li = document.querySelector("li");
 let count = 0;
-const allbtn = document.querySelectorAll("button");
+const existingList = initial_li.textContent;
 
 //colors
 //https://www.color-hex.com/color-palette/1147
@@ -25,7 +25,6 @@ const resetButtonColor = "#96ead7";
 //create empty div to put todo in for styling
 const parent = document.createElement("div");
 parent.innerHTML = "";
-parent.classList.add("parentDiv");
 
 //convert to elements
 const elements = [...nodes];
@@ -38,10 +37,12 @@ for (const el of elements) {
   parent.appendChild(el);
 }
 
+// --- add classes to existing elements --- //
+document.body.classList.add("handlee-regular");
+input.classList.add("handlee-regular");
+
 //set placeholder for input incase user cant see where to put input due to poor sight
 input.setAttribute("placeholder", "Input more todos here");
-
-initial_li.style.backgroundColor = "red";
 
 //Add a todo
 
@@ -49,7 +50,12 @@ const createCheckBox = (count) => {
   const checkbox = document.createElement("input");
   checkbox.setAttribute("type", "checkbox");
   checkbox.setAttribute("id", "checkbox" + count);
-  Object.assign(checkbox.style, { marginRight: "1.5em" });
+  Object.assign(checkbox.style, {
+    marginRight: "1.5em",
+    width: "20px",
+    height: "20px",
+    border: "1px solid bodyColor",
+  });
   return checkbox;
 };
 
@@ -59,29 +65,46 @@ const createLabel = (count) => {
   return label;
 };
 
+const createList = () => {
+  const li = document.createElement("li");
+  Object.assign(li.style, {
+    borderBottom: "1px solid bodyColor",
+  });
+  return li;
+};
 //when putting everything into empty div, li got unnested from ul so put it back
-ul.appendChild(initial_li);
+//since this li was hard coded it needs to be singled out and add div, checkbox, and label
+initial_li.remove();
+const firstlabel = createLabel(count);
+const firstcheckbox = createCheckBox(count);
+const firstinputLabelDiv = document.createElement("div");
+firstinputLabelDiv.appendChild(firstcheckbox);
+firstinputLabelDiv.appendChild(firstlabel);
+firstlabel.textContent = existingList;
+const new_li = createList();
+new_li.appendChild(firstinputLabelDiv);
+firstcheckbox.classList.add("checkbox");
+new_li.classList.add("list");
+ul.appendChild(new_li);
+
 //fn to run when btn is clicked
 
 const handleAddTodo = () => {
+  count++;
   const label = createLabel(count);
   const checkbox = createCheckBox(count);
   const inputLabelDiv = document.createElement("div");
-
   //create an li containing checkbox and label
-  const li = document.createElement("li");
+  const li = createList();
   //set the input text to li text
-
+  li.classList.add("list");
   inputLabelDiv.appendChild(checkbox);
   inputLabelDiv.appendChild(label);
-
   li.append(inputLabelDiv);
   label.textContent = input.value;
   input.value = ""; //clear input
-  // li.style.backgroundColor = "red";//change styling of list here
   //append li item to ul as child el
   ul.appendChild(li);
-  count++;
 };
 
 const handleDeleteCompleted = () => {
@@ -89,34 +112,88 @@ const handleDeleteCompleted = () => {
   const checkboxes = document.querySelectorAll("input[type=checkbox]");
   for (const item of checkboxes) {
     //if the todo is checked i.e. todo completed, delete li element
-    console.log(item);
     if (item.checked) {
       item.parentElement.parentElement.remove();
     }
   }
 };
 
+//if checkbox is checked, slash the font
+const isChecked = () => {
+  const checkboxes = document.querySelectorAll("input[type=checkbox]");
+  for (const item of checkboxes) {
+    if (item.checked) {
+      item.parentElement.style.textDecoration = "line-through";
+    } else {
+      item.parentElement.style.textDecoration = "none";
+    }
+  }
+};
+
+// ---addEventListeners--- //
+ul.addEventListener("change", isChecked);
 //add am event listener to my button
 addButton.addEventListener("click", handleAddTodo);
-// addButton.addEventListener("mouseenter", handleMouseEnter(true));
-// addButton.addEventListener("mouseenter", handleMouseEnter(false));
+//can press enter to activate addButton
+input.addEventListener("keypress", function (event) {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    addButton.click();
+  }
+});
 resetButton.addEventListener("click", handleDeleteCompleted);
-//styling
-//body style
 
+/////////////////////////////////////////////////////////////////////////////////////////
+//styling
+// ---initialize all objects here --- //
+const allbtn = document.querySelectorAll("button");
+const headers = document.querySelectorAll("h1, h2");
+const classCheckBoxes = document.querySelectorAll(".checkbox");
+const classHandleeRegular = document.querySelectorAll(".handlee-regular");
+const classUnorderedList = document.querySelectorAll("ul");
+const classList = document.querySelectorAll("li");
+console.log(classCheckBoxes);
+//font style
+for (const iterator of classHandleeRegular) {
+  Object.assign(iterator.style, {
+    fontFamily: '"Handlee", cursive',
+    fontWeight: "400",
+    fontStyle: "normal",
+  });
+}
+
+//list style
+for (const iterator of classUnorderedList) {
+  Object.assign(iterator.style, {
+    listStyleType: "none",
+    fontSize: "1.5em",
+  });
+}
+
+//list style
+for (const iterator of classList) {
+  Object.assign(iterator.style, {
+    borderButtom: "1px solid black",
+  });
+}
+
+//checkbox style
+for (const iterator of classCheckBoxes) {
+  Object.assign(iterator.style, {
+    background: bodyColor,
+  });
+}
+
+//body style
 Object.assign(document.body.style, {
   boxSizing: "border-box",
   backgroundColor: bodyColor,
-  fontFamily: '"Handlee", cursive',
-  fontWeight: "400",
-  fontStyle: "normal",
 });
 
-//h1 style
-Object.assign(h1.style, { textAlign: "center" });
-
-//h2 style
-Object.assign(h2.style, { textAlign: "center" });
+//header style
+for (const iterator of headers) {
+  Object.assign(iterator.style, { textAlign: "center" });
+}
 
 //parent div style
 Object.assign(parent.style, {
@@ -130,24 +207,26 @@ Object.assign(parent.style, {
 });
 
 //buttons style
+for (const iterator of allbtn) {
+  Object.assign(iterator.style, {
+    alignSelf: "center",
+    textAlign: "center",
+    height: "3em",
+    borderRadius: "20px",
+    border: "none",
+  });
+}
+
+//addButton style
 Object.assign(addButton.style, {
-  alignSelf: "center",
-  textAlign: "center",
   width: "100px",
-  height: "3em",
   backgroundColor: addButtonColor,
-  borderRadius: "20px",
-  border: "none",
 });
 
+//resetButton style
 Object.assign(resetButton.style, {
-  alignSelf: "center",
-  textAlign: "center",
   width: "200px",
-  height: "3em",
   backgroundColor: resetButtonColor,
-  borderRadius: "20px",
-  border: "none",
 });
 
 //input style
@@ -157,16 +236,5 @@ Object.assign(input.style, {
   border: "1px solid lightgray",
   borderRadius: "30px",
   padding: ".1em 1em",
-  fontFamily: '"Handlee", cursive',
-  fontWeight: "400",
-  fontStyle: "normal",
   fontSize: "1.5em",
 });
-// for (const iterator of allbtn) {
-//   Object.assign(iterator.style, { backgroundColor: "black" });
-// }
-
-// const all_li = document.querySelectorAll("li");
-// for (const i of all_li) {
-//   Object.assign(i.style, { backgroundColor: "yellow" });
-// }
