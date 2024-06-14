@@ -1,7 +1,7 @@
 # Todo app
 https://rainingchicken.github.io/todo-list/
 
-This is a project from Per Scholas bootcamp. We are practicing DOM manipulation.
+This is a project from Per Scholas bootcamp. We are practicing DOM manipulation. Other than the few hard-coded HTML elements, every element was dynamically created and appended with js. All styling was also pure js, including import of font, therefore there is no CSS file. 
 
 ## Description
 This web app is a cute pastel green themed todo list app. Some features include
